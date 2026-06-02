@@ -7,7 +7,7 @@ body {
 }
 
 header {
-    background-color: #004d99; /* Azul universitario */
+    background-color: #004d99;
     color: white;
     padding: 20px;
     text-align: center;
@@ -61,9 +61,8 @@ header {
     padding: 8px;
 }
 
-/* Estilo para un bloque de curso */
+/* Bloque contenedor interno de curso */
 .course-block {
-    background-color: #007bff; 
     color: white;
     border-radius: 4px;
     font-size: 12px;
@@ -82,7 +81,6 @@ header {
     box-sizing: border-box;
 }
 
-/* Estilo para la celda de Almuerzo */
 .lunch-break {
     background-color: #f0f0f0; 
     font-weight: bold;
@@ -92,7 +90,7 @@ header {
     padding: 8px; 
 }
 
-/* Estilo para un tope de horario (Conflicto en Calendario) */
+/* Bloque con colisiones confirmadas en calendario */
 .course-block.conflict {
     background-color: #dc3545 !important; 
     animation: pulse 1s infinite alternate;
@@ -103,7 +101,6 @@ header {
     to { opacity: 1; }
 }
 
-/* Estilos para el panel de control */
 #course-search {
     width: 100%;
     padding: 10px;
@@ -113,11 +110,13 @@ header {
     border-radius: 4px;
 }
 
+/* CORRECCIÓN 2: Alto fijo inmutable para evitar colapsos visuales */
 .results-list {
     border: 1px solid #ddd;
-    max-height: 180px;
+    height: 200px; 
+    max-height: 200px;
     overflow-y: auto;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     background: #fff;
     border-radius: 4px;
 }
@@ -126,15 +125,16 @@ header {
     padding: 8px;
     cursor: pointer;
     border-bottom: 1px solid #eee;
+    font-size: 13px;
 }
 
 .result-item:hover {
     background-color: #f0f0f0;
 }
 
-/* CAMBIO 2: Tamaño fijo y scrollbar interna para las secciones */
+/* Contenedor de Secciones Fijo con Scroll */
 .sections-scroll-container {
-    max-height: 250px; 
+    max-height: 220px; 
     overflow-y: auto;
     border: 1px solid #e2e8f0;
     border-radius: 6px;
@@ -187,7 +187,7 @@ header {
     word-break: break-word; 
 }
 
-/* CAMBIO 3 Y 4: Estructuración y diseño de la Tabla de Seleccionados */
+/* Tabla de Cursos Seleccionados */
 .selected-table {
     width: 100%;
     border-collapse: collapse;
@@ -224,7 +224,7 @@ header {
     margin-right: 6px;
 }
 
-/* Alerta de fila con conflicto en el menú de seleccionados */
+/* Resaltado de fila con conflicto en el menú lateral */
 .selected-table tr.row-has-conflict {
     background-color: #fef2f2 !important;
     color: #b91c1c;
@@ -234,7 +234,6 @@ header {
     border-bottom: 1px solid #fca5a5;
 }
 
-/* Botón estilizado para remover */
 .action-remove-btn {
     background-color: #ef4444;
     color: white;
@@ -255,7 +254,7 @@ header {
     background-color: #dc2626;
 }
 
-/* --- Estilos para la Previsualización (Hover) Corregido --- */
+/* --- Estilos para la Previsualización (Hover) Interna --- */
 .preview-block {
     opacity: 0.5; 
     border: 2px dashed #000000 !important; 
@@ -263,8 +262,9 @@ header {
     background-size: 10px 10px;
 }
 
+/* CORRECCIÓN 1: Resaltado específico en previsualización de topes */
 .preview-conflict {
     background-color: #dc3545 !important; 
-    border: 2px solid #dc3545 !important;
-    opacity: 0.7;
+    border: 2px solid #b91c1c !important;
+    opacity: 0.75;
 }
