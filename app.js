@@ -109,7 +109,6 @@ function checkConflict(nuevoBloque) {
     return false;
 }
 
-// AQUÍ ESTÁ EL CAMBIO: Función para recuperar nombres exactos de choques de horario
 function obtenerListadoDeConflictos(seccion, cursoSigla) {
     let conflictos = [];
     seccion.horario.forEach(bloque => {
@@ -166,13 +165,10 @@ function displaySections(curso) {
         summarySpan.classList.add('schedule-summary');
         summarySpan.textContent = formatScheduleSummary(seccion.horario);
 
-        // PREVISUALIZACIÓN INTERNA (Muestra el tope en rojo ANTES de aceptar)
         const removePreview = () => renderSchedule(); 
 
         const previewSchedule = () => {
             renderSchedule(); 
-            const listaTope = obtenerListadoDeConflictos(seccion, curso.sigla);
-            const hasConflict = listaTope.length > 0;
             
             seccion.horario.forEach(bloque => {
                 const slotStartTime = findSlotTime(bloque.inicio);
@@ -180,11 +176,16 @@ function displaySections(curso) {
                 const cell = scheduleTableBody.querySelector(`td[data-day="${bloque.dia}"][data-slot-time="${slotStartTime}"]`);
                 
                 if (cell && !cell.classList.contains('lunch-break')) {
+                    // AQUÍ ESTÁ LA MAGIA: Comprueba el conflicto bloque por bloque, no por sección entera
+                    const blockConflict = checkConflict({ ...bloque, sigla: curso.sigla, seccionId: seccion.id });
+                    
                     const previewDiv = document.createElement('div');
                     previewDiv.classList.add('course-block', 'preview-block');
                     previewDiv.style.backgroundColor = getCourseColor(curso.sigla);
                     
-                    if (hasConflict) previewDiv.classList.add('preview-conflict');
+                    if (blockConflict) {
+                        previewDiv.classList.add('preview-conflict');
+                    }
                     
                     previewDiv.innerHTML = `
                         <span style="font-weight: bold;">${curso.sigla}-${seccion.id}</span>
@@ -200,14 +201,16 @@ function displaySections(curso) {
             sectionContainer.addEventListener('mouseleave', removePreview);
         }
         
-        // AQUÍ ESTÁ EL CAMBIO: Botón con ALERTA de confirmación de choque
+        // CORRECCIÓN DEL MENSAJE: Ahora nombra ambos cursos involucrados
         button.onclick = () => {
             removePreview(); 
             const listaTope = obtenerListadoDeConflictos(seccion, curso.sigla);
             
             if (listaTope.length > 0) {
-                const confirmar = confirm(`¡ADVERTENCIA DE TOPE DE HORARIO!\n\nLa sección ${seccion.id} choca con:\n${listaTope.map(t => `• ${t}`).join('\n')}\n\n¿Deseas agregarla de todas formas?`);
-                if (!confirmar) return; // Si el usuario da a Cancelar, aborta
+                const mensaje = `¡ADVERTENCIA DE TOPE DE HORARIO!\n\nEl curso que deseas agregar:\n▶ ${curso.sigla} - ${curso.nombre} (Secc. ${seccion.id})\n\nTopa en el horario con el siguiente curso ya inscrito:\n${listaTope.map(t => `▶ ${t}`).join('\n')}\n\n¿Deseas agregarlo de todas formas?`;
+                
+                const confirmar = confirm(mensaje);
+                if (!confirmar) return; 
             }
             
             const indexToRemove = horarioSeleccionado.findIndex(c => c.sigla === curso.sigla);
@@ -239,7 +242,7 @@ function removeCourse(sigla, seccionId) {
 }
 
 // ==========================================================
-// 6. RENDERIZADO Y BÚSQUEDA SIN LÍMITES
+// 6. RENDERIZADO Y BUSCADOR
 // ==========================================================
 
 function renderSchedule() {
@@ -294,13 +297,11 @@ function renderSelectedList() {
     });
 }
 
-// AQUÍ ESTÁ EL CAMBIO: Ya no exige mínimo de 2 caracteres y muestra todo por defecto
 function searchCourses() {
     renderSchedule(); 
     const query = limpiarTexto(courseSearchInput.value);
     courseResultsDiv.innerHTML = '';
     
-    // Lista completa y filtrado inteligente SIN requerir mínimo de caracteres
     const filtered = datosCursos.filter(curso => 
         limpiarTexto(curso.sigla).includes(query) || limpiarTexto(curso.nombre).includes(query)
     );
@@ -324,7 +325,7 @@ function getCourseColor(sigla) {
 
 function initApp() {
     generateScheduleGrid();
-    searchCourses(); // Llama a la búsqueda al inicio para llenar la lista fija
+    searchCourses();
     courseSearchInput.addEventListener('input', searchCourses);
 }
 
