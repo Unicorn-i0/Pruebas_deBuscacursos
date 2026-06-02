@@ -1,5 +1,3 @@
-/* (Mantenemos los estilos anteriores de index.html) */
-
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f7f6;
@@ -48,13 +46,11 @@ header {
 
 #schedule-table th, #schedule-table td {
     border: 1px solid #ddd;
-    /* CRÍTICO: Eliminar el padding para que la altura de 50px sea exacta */
     padding: 0; 
     text-align: center;
     height: 50px; 
     position: relative;
     box-sizing: border-box; 
-    /* CRÍTICO: Ocultar cualquier contenido que intente desbordarse y expandir la celda */
     overflow: hidden;
     vertical-align: top; 
 }
@@ -62,7 +58,7 @@ header {
 #schedule-table th {
     background-color: #eef;
     color: #004d99;
-    padding: 8px; /* Mantener padding en encabezados */
+    padding: 8px;
 }
 
 /* Estilo para un bloque de curso */
@@ -71,11 +67,9 @@ header {
     color: white;
     border-radius: 4px;
     font-size: 12px;
-    /* Padding interno del bloque */
     padding: 2px; 
     cursor: pointer;
-    /* CAMBIO CLAVE: Ajustar la altura de línea para hacer el texto más compacto */
-    line-height: 1; 
+    line-height: 1.2; 
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -84,7 +78,8 @@ header {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    opacity: 0.9;
+    opacity: 0.95;
+    box-sizing: border-box;
 }
 
 /* Estilo para la celda de Almuerzo */
@@ -94,13 +89,12 @@ header {
     color: #666;
     vertical-align: middle;
     pointer-events: none; 
-    padding: 8px; /* Devolver padding al almuerzo para centrar el texto */
+    padding: 8px; 
 }
 
-
-/* Estilo para un tope de horario (Conflicto) */
+/* Estilo para un tope de horario (Conflicto en Calendario) */
 .course-block.conflict {
-    background-color: #dc3545 !important; /* Rojo de conflicto */
+    background-color: #dc3545 !important; 
     animation: pulse 1s infinite alternate;
 }
 
@@ -115,13 +109,17 @@ header {
     padding: 10px;
     margin-bottom: 10px;
     box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
 .results-list {
     border: 1px solid #ddd;
-    max-height: 200px;
+    max-height: 180px;
     overflow-y: auto;
     margin-bottom: 10px;
+    background: #fff;
+    border-radius: 4px;
 }
 
 .result-item {
@@ -134,51 +132,21 @@ header {
     background-color: #f0f0f0;
 }
 
-#section-selection button {
-    padding: 10px;
-    margin: 5px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+/* CAMBIO 2: Tamaño fijo y scrollbar interna para las secciones */
+.sections-scroll-container {
+    max-height: 250px; 
+    overflow-y: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 5px;
+    background-color: #fcfcfc;
 }
-
-#section-selection button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-}
-
-#selected-courses {
-    list-style: none;
-    padding: 0;
-}
-
-#selected-courses li {
-    padding: 5px 0;
-    border-bottom: 1px dashed #eee;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.remove-btn {
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 25px;
-    height: 25px;
-    cursor: pointer;
-    font-weight: bold;
-}
-/* Estilos para mostrar el horario antes de seleccionar */
 
 .section-option {
     display: flex; 
     align-items: center;
-    margin-bottom: 8px;
-    padding: 5px 0;
+    margin-bottom: 6px;
+    padding: 5px;
     border-bottom: 1px dashed #eee;
     background-color: #ffffff; 
     transition: background-color 0.2s;
@@ -189,14 +157,15 @@ header {
 }
 
 .section-btn {
-    margin-right: 15px; 
-    padding: 8px 15px;
+    margin-right: 10px; 
+    padding: 6px 12px;
     background-color: #2196F3;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     flex-shrink: 0; 
+    font-size: 12px;
 }
 
 .section-btn:hover:not(:disabled) {
@@ -209,33 +178,93 @@ header {
 }
 
 .schedule-summary {
-    font-size: 0.95em; 
-    color: #333; 
+    font-size: 0.85em; 
+    color: #444; 
     background-color: #f9f9f9;
-    padding: 5px 10px;
+    padding: 4px 8px;
     border-left: 3px solid #673AB7; 
     flex-grow: 1; 
     word-break: break-word; 
 }
-/* --- Estilos para la Previsualización (Hover) --- */
 
-.preview-block {
-    opacity: 0.6; 
-    border: 3px dashed #333; 
-    color: white;
-    cursor: default !important; 
-    font-size: 11px;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease-in-out;
+/* CAMBIO 3 Y 4: Estructuración y diseño de la Tabla de Seleccionados */
+.selected-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 13px;
 }
 
-/* Estilo para cuando la previsualización detecta un conflicto */
+.selected-table th {
+    background-color: #f1f5f9;
+    color: #475569;
+    text-align: left;
+    padding: 8px;
+    border-bottom: 2px solid #cbd5e1;
+}
+
+.selected-table td {
+    padding: 8px;
+    border-bottom: 1px solid #e2e8f0;
+    vertical-align: middle;
+}
+
+.text-truncate {
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.color-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+
+/* Alerta de fila con conflicto en el menú de seleccionados */
+.selected-table tr.row-has-conflict {
+    background-color: #fef2f2 !important;
+    color: #b91c1c;
+}
+
+.selected-table tr.row-has-conflict td {
+    border-bottom: 1px solid #fca5a5;
+}
+
+/* Botón estilizado para remover */
+.action-remove-btn {
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.action-remove-btn:hover {
+    background-color: #dc2626;
+}
+
+/* --- Estilos para la Previsualización (Hover) Corregido --- */
+.preview-block {
+    opacity: 0.5; 
+    border: 2px dashed #000000 !important; 
+    background-image: linear-gradient(45deg, rgba(255,255,255,0.15) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.15) 75%, transparent 75%, transparent);
+    background-size: 10px 10px;
+}
+
 .preview-conflict {
     background-color: #dc3545 !important; 
-    border: 3px solid #dc3545 !important;
-    animation: none; 
+    border: 2px solid #dc3545 !important;
+    opacity: 0.7;
 }
