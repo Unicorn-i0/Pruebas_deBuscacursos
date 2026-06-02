@@ -253,18 +253,29 @@ header {
     background-color: #dc2626;
 }
 
+/* ========================================= */
 /* PREVISUALIZACIÓN Y ALERTA DE TOPE */
+/* ========================================= */
+
 .preview-block {
-    opacity: 0.5; 
+    position: absolute; /* Esto permite sobreponerse a un curso ya existente */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    opacity: 0.65; 
     border: 2px dashed #000000 !important; 
     background-image: linear-gradient(45deg, rgba(255,255,255,0.15) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.15) 75%, transparent 75%, transparent);
     background-size: 10px 10px;
 }
 
+/* Solo se aplica al bloque EXACTO que tiene el tope */
 .preview-conflict {
-    background-color: #dc3545 !important; 
-    border: 2px solid #b91c1c !important;
-    opacity: 0.75;
+    background-color: rgba(220, 53, 69, 0.9) !important; /* Rojo fuerte y casi sólido */
+    border: 3px solid #b91c1c !important;
+    opacity: 0.95;
+    color: white;
 }
 
 /* ESTILOS DE LA FIRMA (FOOTER CENTRADO) */
