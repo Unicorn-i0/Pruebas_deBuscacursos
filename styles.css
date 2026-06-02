@@ -267,15 +267,18 @@ header {
     opacity: 0.75;
 }
 
-/* ESTILOS DE LA FIRMA (FOOTER) */
+/* ESTILOS DE LA FIRMA (FOOTER CENTRADO) */
 .site-footer {
-    background-color: #e2e8f0;
+    background-color: #ffffff;
     color: #475569;
     text-align: center;
-    padding: 15px;
-    margin-top: 20px;
+    padding: 12px 30px;
+    margin: auto auto 20px auto; /* El primer 'auto' la empuja abajo, los otros la centran */
     font-size: 14px;
-    border-top: 1px solid #cbd5e1;
+    border-radius: 50px; /* Le da un borde redondeado elegante */
+    width: max-content; /* Hace que el recuadro mida exactamente lo que mide tu texto */
+    border: 1px solid #cbd5e1;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05); /* Sombra suave para que resalte */
 }
 
 .site-footer a {
