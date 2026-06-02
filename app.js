@@ -56,7 +56,7 @@ function findSlotTime(courseStartTimeStr) {
     return null; 
 }
 
-// Remueve tildes y convierte a minúsculas para búsquedas inteligentes
+// CAMBIO 1: Función para limpiar tildes y dejar todo en minúsculas
 function limpiarTexto(texto) {
     return texto
         .normalize("NFD")
@@ -100,7 +100,7 @@ function generateScheduleGrid() {
 }
 
 // ==========================================================
-// 4. LÓGICA DE DETECCIÓN Y RECOLECCIÓN DE TOPES
+// 4. LÓGICA DE DETECCIÓN DE TOPES
 // ==========================================================
 
 function checkConflict(nuevoBloque) {
@@ -130,44 +130,6 @@ function checkConflict(nuevoBloque) {
     return false;
 }
 
-// NUEVO: Devuelve una lista con los nombres específicos de los cursos que generan el tope
-function obtenerListadoDeConflictos(seccion, cursoSigla) {
-    let conflictos = [];
-    
-    seccion.horario.forEach(bloque => {
-        const inicioNuevo = timeToMinutes(bloque.inicio);
-        const finNuevo = timeToMinutes(bloque.fin);
-
-        // Conflicto con almuerzo
-        if (bloque.dia !== 'Sábado' && inicioNuevo < ALMUERZO_FIN && finNuevo > ALMUERZO_INICIO) {
-            if (!conflictos.includes("Horario de Almuerzo institucional")) {
-                conflictos.push("Horario de Almuerzo institucional");
-            }
-        }
-
-        // Conflicto con asignaturas inscritas
-        horarioSeleccionado.forEach(cursoSeleccionado => {
-            if (cursoSeleccionado.sigla === cursoSigla) return; // Se omite si reemplaza sección previa del mismo curso
-
-            cursoSeleccionado.horario.forEach(bloqueExistente => {
-                if (bloqueExistente.dia === bloque.dia) {
-                    const inicioExistente = timeToMinutes(bloqueExistente.inicio);
-                    const finExistente = timeToMinutes(bloqueExistente.fin);
-                    
-                    if (inicioNuevo < finExistente && finNuevo > inicioExistente) {
-                        const descripcion = `${cursoSeleccionado.sigla} - Secc. ${cursoSeleccionado.seccionId} (${cursoSeleccionado.nombre})`;
-                        if (!conflictos.includes(descripcion)) {
-                            conflictos.push(descripcion);
-                        }
-                    }
-                }
-            });
-        });
-    });
-    
-    return conflictos;
-}
-
 // ==========================================================
 // 5. MANEJO DE SELECCIÓN DE CURSOS
 // ==========================================================
@@ -181,6 +143,7 @@ function formatScheduleSummary(horario) {
 function displaySections(curso) {
     sectionSelectionDiv.innerHTML = `<h3>Secciones de ${curso.sigla} - ${curso.nombre}:</h3>`;
     
+    // Contenedor interno para el scroll fijo
     const scrollContainer = document.createElement('div');
     scrollContainer.classList.add('sections-scroll-container');
 
@@ -203,7 +166,7 @@ function displaySections(curso) {
         summarySpan.classList.add('schedule-summary');
         summarySpan.textContent = scheduleSummary;
 
-        // --- MANEJO DE PREVISUALIZACIÓN MEDIANTE DIV INTERNO (Evita encimar bloques continuos) ---
+        // --- CORRECCIÓN DE BUG: PREVISUALIZACIÓN MEDIANTE DIV INTERNO ---
         const removePreview = () => {
             renderSchedule(); 
         };
@@ -211,8 +174,9 @@ function displaySections(curso) {
         const previewSchedule = () => {
             renderSchedule(); 
             
-            const listaTope = obtenerListadoDeConflictos(seccion, curso.sigla);
-            const hasConflict = listaTope.length > 0;
+            const hasConflict = seccion.horario.some(bloque => 
+                checkConflict({ ...bloque, sigla: curso.sigla, seccionId: seccion.id })
+            );
             
             seccion.horario.forEach(bloque => {
                 const slotStartTime = findSlotTime(bloque.inicio);
@@ -223,7 +187,7 @@ function displaySections(curso) {
                 );
                 
                 if (cell && !cell.classList.contains('lunch-break')) {
-                    // Crear un div hijo para no alterar el display nativo del TD de la tabla
+                    // SOLUCIÓN: Creamos un elemento div en vez de mutar la celda completa
                     const previewDiv = document.createElement('div');
                     previewDiv.classList.add('course-block', 'preview-block');
                     previewDiv.style.backgroundColor = getCourseColor(curso.sigla);
@@ -246,21 +210,8 @@ function displaySections(curso) {
             sectionContainer.addEventListener('mouseleave', removePreview);
         }
         
-        // CORRECCIÓN 1: Cuadro de diálogo interactivo (Aceptar/Cancelar) antes de agregar si hay topes
         button.onclick = () => {
             removePreview(); 
-            
-            const listaTope = obtenerListadoDeConflictos(seccion, curso.sigla);
-            if (listaTope.length > 0) {
-                const mensajeAlerta = `¡ADVERTENCIA! La sección ${seccion.id} de ${curso.sigla} presenta topes horarios con:\n\n` + 
-                                      listaTope.map(t => `• ${t}`).join('\n') + 
-                                      `\n\n¿Estás seguro de que deseas agregar este curso de todas formas?`;
-                
-                const confirmarInscripcion = confirm(mensajeAlerta);
-                if (!confirmarInscripcion) {
-                    return; // Detiene la adición si el usuario presiona "Cancelar"
-                }
-            }
             
             const indexToRemove = horarioSeleccionado.findIndex(c => c.sigla === curso.sigla);
             if (indexToRemove !== -1) {
@@ -268,9 +219,9 @@ function displaySections(curso) {
             }
             addCourseToSchedule(curso, seccion);
             
-            courseSearchInput.value = '';
-            searchCourses(); // Mantiene la lista limpia y actualizada por defecto
+            courseResultsDiv.innerHTML = '';
             sectionSelectionDiv.innerHTML = '';
+            courseSearchInput.value = '';
         };
         
         sectionContainer.appendChild(button);
@@ -344,11 +295,12 @@ function renderSchedule() {
     });
 }
 
+// CAMBIO 3 y 4: Renderizado de la lista organizada como una Tabla limpia con alertas de tope
 function renderSelectedList() {
     selectedCoursesList.innerHTML = '';
     
     if (horarioSeleccionado.length === 0) {
-        selectedCoursesList.innerHTML = '<p style="color:#777; font-style:italic; padding:10px; margin:0;">No hay cursos seleccionados.</p>';
+        selectedCoursesList.innerHTML = '<p style="color:#777; font-style:italic; padding:10px;">No hay cursos seleccionados.</p>';
         return;
     }
 
@@ -369,13 +321,14 @@ function renderSelectedList() {
     const tbody = table.querySelector('tbody');
 
     horarioSeleccionado.forEach(curso => {
+        // Verificar si este curso específico tiene algún tope en sus bloques
         const tieneTope = curso.horario.some(bloque => 
             checkConflict({ ...bloque, sigla: curso.sigla, seccionId: curso.seccionId })
         );
 
         const tr = document.createElement('tr');
         if (tieneTope) {
-            tr.classList.add('row-has-conflict'); 
+            tr.classList.add('row-has-conflict'); // Destacar fila con error
         }
 
         tr.innerHTML = `
@@ -394,6 +347,7 @@ function renderSelectedList() {
 
     selectedCoursesList.appendChild(table);
 
+    // Reasignar eventos de eliminación
     document.querySelectorAll('.action-remove-btn').forEach(button => {
         button.onclick = (e) => {
             const sigla = e.target.dataset.sigla;
@@ -403,12 +357,17 @@ function renderSelectedList() {
     });
 }
 
-// CORRECCIÓN 2: Muestra la lista completa de cursos por defecto y la filtra dinámicamente
 function searchCourses() {
+    renderSchedule(); 
+    
+    // Aplicamos limpieza de tildes y minúsculas al valor de búsqueda
     const query = limpiarTexto(courseSearchInput.value);
     courseResultsDiv.innerHTML = '';
+    sectionSelectionDiv.innerHTML = ''; 
 
-    // Filtrado adaptativo (si está vacío, muestra la lista completa)
+    if (query.length < 2) return;
+
+    // Filtramos limpiando también los datos de origen
     const filtered = datosCursos.filter(curso => 
         limpiarTexto(curso.sigla).includes(query) || 
         limpiarTexto(curso.nombre).includes(query)
@@ -443,7 +402,7 @@ function getCourseColor(sigla) {
     
     if (colors[sigla]) return colors[sigla];
     
-    // Asignación de color pastel único basado en el hash del texto de la sigla
+    // CAMBIO 4: Generador automático de color pastel si el código no está en la lista previa
     let hash = 0;
     for (let i = 0; i < sigla.length; i++) {
         hash = sigla.charCodeAt(i) + ((hash << 5) - hash);
@@ -454,7 +413,6 @@ function getCourseColor(sigla) {
 
 function initApp() {
     generateScheduleGrid();
-    searchCourses(); // Renderiza el listado completo al arrancar la app
     courseSearchInput.addEventListener('input', searchCourses);
 }
 
