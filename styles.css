@@ -22,20 +22,41 @@ header {
     margin: 20px auto;
     padding: 10px;
     gap: 20px;
-    flex: 1; /* Permite que el contenedor empuje el footer hacia abajo */
+    flex: 1;
+    align-items: flex-start; /* Ambas columnas arrancan desde arriba */
 }
 
 .controls {
-    flex: 1; 
+    flex: 1;
     background: white;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    height: fit-content;
+    /* Se ancla a la misma altura que el horario usando position sticky */
+    position: sticky;
+    top: 20px;
+    /* Altura máxima = viewport menos header (~80px) menos márgenes (~40px) */
+    max-height: calc(100vh - 140px);
+    /* El panel entero NO scrollea: cada zona interna tiene su propio scroll */
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+
+/* Título "Buscar Curso" — espacio fijo, no crece */
+.controls > h2 {
+    margin: 0 0 10px 0;
+    flex-shrink: 0;
+}
+
+/* Input de búsqueda — espacio fijo */
+#course-search {
+    flex-shrink: 0;
 }
 
 .schedule-view {
-    flex: 2; 
+    flex: 2;
 }
 
 /* --- Tabla de Horario --- */
@@ -112,13 +133,14 @@ header {
     border-radius: 4px;
 }
 
-/* AQUÍ ESTÁ EL CAMBIO: Altura fija obligatoria de 250px para el buscador */
+/* Lista de resultados de búsqueda — altura fija razonable, scroll interno */
 .results-list {
     border: 1px solid #ddd;
-    height: 250px; 
-    max-height: 250px;
+    height: 180px;
+    max-height: 180px;
+    flex-shrink: 0;
     overflow-y: auto;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     background: #fff;
     border-radius: 4px;
 }
@@ -134,8 +156,19 @@ header {
     background-color: #f0f0f0;
 }
 
+#section-selection {
+    flex-shrink: 0;
+    overflow: hidden; /* El scroll lo maneja sections-scroll-container interno */
+}
+
+#section-selection h3 {
+    margin: 0 0 6px 0;
+    font-size: 14px;
+    color: #333;
+}
+
 .sections-scroll-container {
-    max-height: 220px; 
+    max-height: 180px;
     overflow-y: auto;
     border: 1px solid #e2e8f0;
     border-radius: 6px;
@@ -187,7 +220,32 @@ header {
     flex-grow: 1; 
 }
 
-/* ESTILOS DE LA TABLA DE SELECCIONADOS */
+/* Cabecera de la sección seleccionados — fija, no crece */
+.selected-courses-header {
+    flex-shrink: 0;
+    margin: 10px 0 4px 0;
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Wrapper que ocupa TODO el espacio sobrante y scrollea */
+.selected-courses-wrapper {
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0; /* Clave para que flex+overflow funcione */
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background: #fff;
+    padding: 4px;
+}
+
+/* ul legacy — se resetea para que no interfiera */
+#selected-courses {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
 .selected-table {
     width: 100%;
     border-collapse: collapse;
