@@ -1,152 +1,130 @@
-body {
+/* ================================================
+   RESET Y ESTRUCTURA BASE — ocupa toda la ventana
+   ================================================ */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
     font-family: Arial, sans-serif;
     background-color: #f4f7f6;
     color: #333;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
 }
 
+body {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Nada scrollea a nivel de página */
+}
+
+/* ================================================
+   HEADER — altura fija
+   ================================================ */
 header {
     background-color: #004d99;
     color: white;
-    padding: 20px;
+    padding: 14px 20px;
     text-align: center;
+    flex-shrink: 0;
 }
 
+header h1 {
+    margin: 0;
+    font-size: 1.4rem;
+}
+
+/* ================================================
+   FOOTER — altura fija
+   ================================================ */
+.site-footer {
+    background-color: #ffffff;
+    color: #475569;
+    text-align: center;
+    padding: 10px 30px;
+    margin: 8px auto;
+    font-size: 13px;
+    border-radius: 50px;
+    width: max-content;
+    border: 1px solid #cbd5e1;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    flex-shrink: 0;
+}
+
+.site-footer a {
+    color: #004d99;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.site-footer a:hover {
+    text-decoration: underline;
+}
+
+/* ================================================
+   CONTENEDOR PRINCIPAL — ocupa TODO el espacio entre header y footer
+   ================================================ */
 .container {
     display: flex;
-    max-width: 1300px;
-    margin: 20px auto;
-    padding: 10px;
-    gap: 20px;
-    flex: 1;
-    align-items: flex-start; /* Ambas columnas arrancan desde arriba */
+    flex: 1;              /* Estira para llenar lo que queda */
+    min-height: 0;        /* Permite que flex-children se compriman */
+    gap: 16px;
+    padding: 12px 16px;
+    overflow: hidden;     /* El scroll va dentro de cada columna */
+    width: 100%;
+    max-width: 100%;
 }
 
+/* ================================================
+   COLUMNA IZQUIERDA — panel de controles
+   Panel fijo; cada zona interna tiene su propio scroll
+   ================================================ */
 .controls {
-    flex: 1;
+    width: 320px;
+    flex-shrink: 0;
     background: white;
-    padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    /* Se ancla a la misma altura que el horario usando position sticky */
-    position: sticky;
-    top: 20px;
-    /* Altura máxima = viewport menos header (~80px) menos márgenes (~40px) */
-    max-height: calc(100vh - 140px);
-    /* El panel entero NO scrollea: cada zona interna tiene su propio scroll */
-    overflow: hidden;
+    padding: 16px;
     display: flex;
     flex-direction: column;
-    box-sizing: border-box;
+    gap: 8px;
+    overflow: hidden;     /* El panel NO scrollea, solo sus zonas internas */
+    min-height: 0;
 }
 
-/* Título "Buscar Curso" — espacio fijo, no crece */
+/* Título principal del panel */
 .controls > h2 {
-    margin: 0 0 10px 0;
-    flex-shrink: 0;
-}
-
-/* Input de búsqueda — espacio fijo */
-#course-search {
-    flex-shrink: 0;
-}
-
-.schedule-view {
-    flex: 2;
-}
-
-/* --- Tabla de Horario --- */
-#schedule-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
-
-#schedule-table th, #schedule-table td {
-    border: 1px solid #ddd;
-    padding: 0; 
-    text-align: center;
-    height: 50px; 
-    position: relative;
-    box-sizing: border-box; 
-    overflow: hidden;
-    vertical-align: top; 
-}
-
-#schedule-table th {
-    background-color: #eef;
+    margin: 0;
+    font-size: 1rem;
     color: #004d99;
-    padding: 8px;
+    flex-shrink: 0;
 }
 
-.course-block {
-    color: white;
-    border-radius: 4px;
-    font-size: 12px;
-    padding: 2px; 
-    cursor: pointer;
-    line-height: 1.2; 
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    opacity: 0.95;
-    box-sizing: border-box;
-}
-
-.lunch-break {
-    background-color: #f0f0f0; 
-    font-weight: bold;
-    color: #666;
-    vertical-align: middle;
-    pointer-events: none; 
-    padding: 8px; 
-}
-
-.course-block.conflict {
-    background-color: #dc3545 !important; 
-    animation: pulse 1s infinite alternate;
-}
-
-@keyframes pulse {
-    from { opacity: 0.8; }
-    to { opacity: 1; }
-}
-
+/* Input de búsqueda */
 #course-search {
     width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    box-sizing: border-box;
+    padding: 8px 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
+    font-size: 14px;
+    flex-shrink: 0;
 }
 
-/* Lista de resultados de búsqueda — altura fija razonable, scroll interno */
+/* ── ZONA 1: Resultados de búsqueda (altura fija + scroll) ── */
 .results-list {
     border: 1px solid #ddd;
-    height: 180px;
-    max-height: 180px;
+    height: 170px;        /* Fija: siempre ocupa exactamente esto */
     flex-shrink: 0;
     overflow-y: auto;
-    margin-bottom: 10px;
     background: #fff;
     border-radius: 4px;
 }
 
 .result-item {
-    padding: 8px;
+    padding: 8px 10px;
     cursor: pointer;
     border-bottom: 1px solid #eee;
     font-size: 13px;
@@ -156,49 +134,51 @@ header {
     background-color: #f0f0f0;
 }
 
+/* ── ZONA 2: Secciones del curso (altura fija + scroll) ── */
 #section-selection {
     flex-shrink: 0;
-    overflow: hidden; /* El scroll lo maneja sections-scroll-container interno */
+    overflow: hidden;
 }
 
 #section-selection h3 {
-    margin: 0 0 6px 0;
-    font-size: 14px;
+    margin: 0 0 5px 0;
+    font-size: 13px;
+    font-weight: bold;
     color: #333;
 }
 
 .sections-scroll-container {
-    max-height: 180px;
+    height: 160px;        /* Fija: siempre ocupa exactamente esto */
     overflow-y: auto;
     border: 1px solid #e2e8f0;
     border-radius: 6px;
-    padding: 5px;
+    padding: 4px;
     background-color: #fcfcfc;
 }
 
 .section-option {
-    display: flex; 
+    display: flex;
     align-items: center;
-    margin-bottom: 6px;
     padding: 5px;
+    margin-bottom: 4px;
     border-bottom: 1px dashed #eee;
-    background-color: #ffffff; 
+    background-color: #ffffff;
     transition: background-color 0.2s;
 }
 
 .section-option:hover {
-    background-color: #f0f0ff; 
+    background-color: #f0f0ff;
 }
 
 .section-btn {
-    margin-right: 10px; 
-    padding: 6px 12px;
+    margin-right: 8px;
+    padding: 5px 10px;
     background-color: #2196F3;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    flex-shrink: 0; 
+    flex-shrink: 0;
     font-size: 12px;
 }
 
@@ -212,63 +192,154 @@ header {
 }
 
 .schedule-summary {
-    font-size: 0.85em; 
-    color: #444; 
+    font-size: 0.82em;
+    color: #444;
     background-color: #f9f9f9;
-    padding: 4px 8px;
-    border-left: 3px solid #673AB7; 
-    flex-grow: 1; 
+    padding: 3px 7px;
+    border-left: 3px solid #673AB7;
+    flex-grow: 1;
+    line-height: 1.4;
 }
 
-/* Cabecera de la sección seleccionados — fija, no crece */
+/* ── ZONA 3: Cursos seleccionados (ocupa el resto + scroll) ── */
 .selected-courses-header {
     flex-shrink: 0;
-    margin: 10px 0 4px 0;
-    font-size: 16px;
+    margin: 0;
+    font-size: 14px;
     font-weight: bold;
     color: #333;
 }
 
-/* Wrapper que ocupa TODO el espacio sobrante y scrollea */
 .selected-courses-wrapper {
-    flex: 1;
+    flex: 1;              /* Ocupa TODO el espacio sobrante */
+    min-height: 0;        /* Clave: sin esto flex ignora overflow */
     overflow-y: auto;
-    min-height: 0; /* Clave para que flex+overflow funcione */
     border: 1px solid #e2e8f0;
     border-radius: 6px;
     background: #fff;
     padding: 4px;
 }
 
-/* ul legacy — se resetea para que no interfiera */
 #selected-courses {
     list-style: none;
     margin: 0;
     padding: 0;
 }
+
+/* ================================================
+   COLUMNA DERECHA — horario
+   Scrollea verticalmente si la tabla es más alta que la ventana
+   ================================================ */
+.schedule-view {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;     /* Scroll solo aquí si el horario no cabe */
+    overflow-x: auto;
+}
+
+.schedule-view > h2 {
+    margin: 0 0 8px 0;
+    font-size: 1rem;
+    color: #004d99;
+    flex-shrink: 0;
+}
+
+/* ================================================
+   TABLA DE HORARIO
+   ================================================ */
+#schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    table-layout: fixed;
+}
+
+#schedule-table th,
+#schedule-table td {
+    border: 1px solid #ddd;
+    padding: 0;
+    text-align: center;
+    height: 50px;
+    position: relative;
+    overflow: hidden;
+    vertical-align: top;
+}
+
+#schedule-table th {
+    background-color: #eef;
+    color: #004d99;
+    padding: 8px;
+    font-size: 13px;
+}
+
+.course-block {
+    color: white;
+    border-radius: 4px;
+    font-size: 11px;
+    padding: 2px;
+    cursor: pointer;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.95;
+}
+
+.lunch-break {
+    background-color: #f0f0f0;
+    font-weight: bold;
+    color: #666;
+    vertical-align: middle;
+    pointer-events: none;
+    padding: 8px;
+    font-size: 12px;
+}
+
+.course-block.conflict {
+    background-color: #dc3545 !important;
+    animation: pulse 1s infinite alternate;
+}
+
+@keyframes pulse {
+    from { opacity: 0.8; }
+    to { opacity: 1; }
+}
+
+/* ================================================
+   TABLA DE SELECCIONADOS
+   ================================================ */
 .selected-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 10px;
-    font-size: 13px;
+    font-size: 12px;
 }
 
 .selected-table th {
     background-color: #f1f5f9;
     color: #475569;
     text-align: left;
-    padding: 8px;
+    padding: 6px 8px;
     border-bottom: 2px solid #cbd5e1;
 }
 
 .selected-table td {
-    padding: 8px;
+    padding: 6px 8px;
     border-bottom: 1px solid #e2e8f0;
     vertical-align: middle;
 }
 
 .text-truncate {
-    max-width: 150px;
+    max-width: 130px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -276,10 +347,10 @@ header {
 
 .color-dot {
     display: inline-block;
-    width: 10px;
-    height: 10px;
+    width: 9px;
+    height: 9px;
     border-radius: 50%;
-    margin-right: 6px;
+    margin-right: 5px;
 }
 
 .selected-table tr.row-has-conflict {
@@ -296,11 +367,11 @@ header {
     color: white;
     border: none;
     border-radius: 4px;
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
     cursor: pointer;
     font-weight: bold;
-    font-size: 14px;
+    font-size: 13px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -311,51 +382,25 @@ header {
     background-color: #dc2626;
 }
 
-/* ========================================= */
-/* PREVISUALIZACIÓN Y ALERTA DE TOPE */
-/* ========================================= */
-
+/* ================================================
+   PREVISUALIZACIÓN Y ALERTA DE TOPE
+   ================================================ */
 .preview-block {
-    position: absolute; /* Esto permite sobreponerse a un curso ya existente */
+    position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
     z-index: 10;
-    opacity: 0.65; 
-    border: 2px dashed #000000 !important; 
+    opacity: 0.65;
+    border: 2px dashed #000000 !important;
     background-image: linear-gradient(45deg, rgba(255,255,255,0.15) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.15) 75%, transparent 75%, transparent);
     background-size: 10px 10px;
 }
 
-/* Solo se aplica al bloque EXACTO que tiene el tope */
 .preview-conflict {
-    background-color: rgba(220, 53, 69, 0.9) !important; /* Rojo fuerte y casi sólido */
+    background-color: rgba(220, 53, 69, 0.9) !important;
     border: 3px solid #b91c1c !important;
     opacity: 0.95;
     color: white;
-}
-
-/* ESTILOS DE LA FIRMA (FOOTER CENTRADO) */
-.site-footer {
-    background-color: #ffffff;
-    color: #475569;
-    text-align: center;
-    padding: 12px 30px;
-    margin: auto auto 20px auto; /* El primer 'auto' la empuja abajo, los otros la centran */
-    font-size: 14px;
-    border-radius: 50px; /* Le da un borde redondeado elegante */
-    width: max-content; /* Hace que el recuadro mida exactamente lo que mide tu texto */
-    border: 1px solid #cbd5e1;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05); /* Sombra suave para que resalte */
-}
-
-.site-footer a {
-    color: #004d99;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-.site-footer a:hover {
-    text-decoration: underline;
 }
