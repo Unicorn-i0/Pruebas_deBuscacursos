@@ -64,7 +64,7 @@ header h1 {
    PANEL IZQUIERDO
    ================================================ */
 .controls {
-    width: 400px;
+    width: 280px;
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
@@ -400,10 +400,11 @@ header h1 {
 /* Altura de cada fila se distribuye para llenar la tabla */
 #schedule-table tbody tr {
     height: calc((100%) / 10);
+    min-height: 52px;
 }
 
 .time-label {
-    font-size: 10px !important;
+    font-size: 9px !important;
     color: #94a3b8 !important;
     padding: 2px !important;
     background: #f8fafc;
@@ -418,8 +419,8 @@ header h1 {
     inset: 1px;
     color: white;
     border-radius: 3px;
-    font-size: 12px;
-    padding: 2px 3px;
+    font-size: 11px;
+    padding: 3px 4px;
     cursor: pointer;
     overflow: hidden;
     display: flex;
@@ -428,21 +429,21 @@ header h1 {
     justify-content: center;
     gap: 1px;
     opacity: 0.93;
-    line-height: 1.2;
+    line-height: 1.3;
 }
 
-.course-block span { 
-    max-width: 100%; 
-    overflow: hidden; 
-    text-overflow: ellipsis; 
-    white-space: nowrap;
+.course-block span {
+    max-width: 100%;
     display: block;
     text-align: center;
+    white-space: normal;
+    word-break: break-word;
+    overflow: hidden;
 }
 
-.course-block .block-sigla { font-weight: bold; font-size: 10px; }
-.course-block .block-tipo  { font-size: 8.5px; opacity: 0.9; }
-.course-block .block-prof  { font-size: 8px; opacity: 0.85; font-style: italic; }
+.course-block .block-sigla { font-weight: bold; font-size: 12px; }
+.course-block .block-tipo  { font-size: 10px; opacity: 0.9; }
+.course-block .block-prof  { font-size: 10px; opacity: 0.88; font-style: italic; }
 
 .lunch-break {
     background-color: #f1f5f9;
